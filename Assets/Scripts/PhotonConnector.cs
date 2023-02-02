@@ -2,26 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
-public class PhotonConnector : MonoBehaviour
+public class PhotonConnector : MonoBehaviourPunCallbacks
 {
-    void Awake()
+    [Header("Panels")]
+    [SerializeField] GameObject mainMenu;
+    [SerializeField] GameObject loading;
+    [Header("Buttons")]
+    [SerializeField] Button start;
+    [SerializeField] Button back;
+    public void StartClicked()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.ConnectUsingSettings();
+        mainMenu.SetActive(false);
+        loading.SetActive(true);
     }
-    void Start()
+    public void CancelClicked()
     {
-        Connect();
+        mainMenu.SetActive(true);
+        loading.SetActive(false);
+        PhotonNetwork.LeaveLobby();
     }
-    void Connect()
+    public override void OnConnectedToMaster()
     {
-        if (PhotonNetwork.IsConnected)
-        {
-            PhotonNetwork.JoinRandomRoom();
-        }
-        else
-        {
-            PhotonNetwork.ConnectUsingSettings();
-        }
+        PhotonNetwork.JoinLobby();
+    }
+    public override void OnJoinedLobby()
+    {
+        SceneManager.LoadScene(1);
     }
 }
